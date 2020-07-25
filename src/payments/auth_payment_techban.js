@@ -4,7 +4,7 @@ const fs = require('fs');
 const uuid = require('uuid');
 const qs = require("qs")
 
-class AuthAccountTechBanAPI {
+class AuthPaymentTechBanAPI {
   constructor(configs) {
     this.configs = configs,
     this.token_bearer = ""
@@ -56,7 +56,7 @@ const CONFIGS = {
 
 (async() => {
   try {
-    const techban = new AuthAccountTechBanAPI(CONFIGS)
+    const techban = new AuthPaymentTechBanAPI(CONFIGS)
     const a = await techban.getTokenPayments()
     console.log(a.body)
   } catch (error) {

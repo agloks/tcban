@@ -135,7 +135,6 @@ class AuthAccountTechBanAPI {
       'alg': 'none'
     })
 
-    console.log(queryString)
     return new Promise((res, err) => {
       req.get({
         uri : this.configs.RESOURCE_ENDPOINT + `/ozone/v1.0/auth-code-url/${this.acess_consent_id}?${queryString}` ,
@@ -175,7 +174,7 @@ class AuthAccountTechBanAPI {
 
     this.token_id = await result
     if(!Array.isArray(this.token_id))
-      this.token_id = JSON.parse(this.token_id.body)["id_token"]
+      this.token_id = JSON.parse(this.token_id.body)["access_token"]
 
     return result
   };
@@ -206,23 +205,23 @@ const CONFIGS = {
   OB_PARTICIPANT_ID: "c3c937c4-ab71-427f-9b59-4099b7c680ab"
 };
 
-(async() => {
-  try {
-    const techban = new AuthAccountTechBanAPI(CONFIGS)
-    // const a = await techban.getAuthTokenAccounts()
-    // const a = await techban.getAllATM()
-    // const a = await techban.askGrantToAccount()
-    // console.log(a.body)
-    // const a = await techban.getConsentLinkAccount()
-    // const b = await techban.validateConsentStatus()
-    // console.log(a.body)
-    // console.log(b.body)
-    const c = await techban.getTokenAccounts("835ea6ab-d2cc-4d15-b9c9-a61df3ab7759")
-    console.log(c)
+// (async() => {
+//   try {
+//     const techban = new AuthAccountTechBanAPI(CONFIGS)
+//     // const a = await techban.getAuthTokenAccounts()
+//     // const a = await techban.getAllATM()
+//     const a = await techban.askGrantToAccount()
+//     console.log(a.body)
+//     // const a = await techban.getConsentLinkAccount()
+//     // const b = await techban.validateConsentStatus()
+//     // console.log(a.body)
+//     // console.log(b.body)
+//     // const c = await techban.getTokenAccounts("835ea6ab-d2cc-4d15-b9c9-a61df3ab7759")
+//     // console.log(c)
 
-  } catch (error) {
-    console.log(error)
-  }
-})()
+//   } catch (error) {
+//     console.log(error)
+//   }
+// })()
 
 module.exports = AuthAccountTechBanAPI
