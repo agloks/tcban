@@ -24,7 +24,7 @@ class AuthAccountTechBanAPI {
     }
   };
 
-  getTokenPayments = async() => {
+  getAuthTokenPayments = async() => {
     return new Promise((res, err) => {
       req.post({
         uri : this.configs.TOKEN_ENDPOINT,

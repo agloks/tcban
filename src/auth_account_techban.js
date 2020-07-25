@@ -9,6 +9,7 @@ class AuthAccountTechBanAPI {
     this.configs = configs,
     this.token_bearer = ""
     this.acess_consent_id = ""
+    this.token_id = ""
   };
 
   handlerCallbackRequest = (res, err) => {
@@ -16,7 +17,7 @@ class AuthAccountTechBanAPI {
       const _error = error;
       const _response = response;
       
-      // console.log(_response)
+      console.log(_response)
       if(_response.statusCode < 400)
         res(_response)
       else
@@ -24,7 +25,7 @@ class AuthAccountTechBanAPI {
     }
   };
 
-  getTokenAccounts = async() => {
+  getAuthTokenAccounts = async() => {
     const result = new Promise((res, err) => {
       req.post({
         uri : this.configs.TOKEN_ENDPOINT,
@@ -69,7 +70,7 @@ class AuthAccountTechBanAPI {
   };
 
   askGrantToAccount = async() => {
-    await this.getTokenAccounts()
+    await this.getAuthTokenAccounts()
 
     // TODO: change the glue time to moment.utc
     const payload = {
@@ -122,6 +123,8 @@ class AuthAccountTechBanAPI {
     this.acess_consent_id = await result
     if(!Array.isArray(this.acess_consent_id))
       this.acess_consent_id = this.acess_consent_id.body["Data"]["ConsentId"]
+
+    return result
   };
 
   getConsentLinkAccount = async() => {
@@ -148,6 +151,33 @@ class AuthAccountTechBanAPI {
         rejectUnauthorized: false
       }, this.handlerCallbackRequest(res, err))
     });
+  };
+
+  getTokenAccounts = async(code) => {
+    const result = new Promise((res, err) => {
+      req.post({
+        uri : this.configs.TOKEN_ENDPOINT,
+        key: this.configs.CA_KEY,
+        cert: this.configs.CA_CERT,
+        headers: {
+          'Content-Type' : 'application/x-www-form-urlencoded',
+          'Authorization' : `Basic ${this.configs.AUTH_HEADER_TOKEN}`
+        },
+        form: {
+          "code": code,
+          "grant_type": "authorization_code", 
+          "scope": "accounts ",
+          "redirect_uri": "http://www.google.co.uk"
+        },
+        rejectUnauthorized: false
+      }, this.handlerCallbackRequest(res, err))
+    });
+
+    this.token_id = await result
+    if(!Array.isArray(this.token_id))
+      this.token_id = JSON.parse(this.token_id.body)["id_token"]
+
+    return result
   };
 
   getAllATM = async() => {
@@ -179,14 +209,20 @@ const CONFIGS = {
 (async() => {
   try {
     const techban = new AuthAccountTechBanAPI(CONFIGS)
-    // const a = await techban.getTokenAccounts()
+    // const a = await techban.getAuthTokenAccounts()
     // const a = await techban.getAllATM()
-    const a = await techban.askGrantToAccount()
+    // const a = await techban.askGrantToAccount()
     // console.log(a.body)
     // const a = await techban.getConsentLinkAccount()
-    const b = await techban.validateConsentStatus()
-    console.log(b.body)
+    // const b = await techban.validateConsentStatus()
+    // console.log(a.body)
+    // console.log(b.body)
+    const c = await techban.getTokenAccounts("835ea6ab-d2cc-4d15-b9c9-a61df3ab7759")
+    console.log(c)
+
   } catch (error) {
     console.log(error)
   }
 })()
+
+module.exports = AuthAccountTechBanAPI

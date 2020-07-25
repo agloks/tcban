@@ -10,6 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.9.25",
+    "nanoexpress-pro": "^2.2.3",
     "qs": "^6.9.4",
     "request": "^2.88.2",
     "uuid": "^8.2.0"
