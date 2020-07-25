@@ -1,0 +1,17 @@
+{
+  "name": "TPP233",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test_axios.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "qs": "^6.9.4",
+    "request": "^2.88.2",
+    "uuid": "^8.2.0"
+  }
+}

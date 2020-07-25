@@ -1,0 +1,4 @@
+1) Tela de login
+2) Questionario de perfil
+3) Match entre perfis do agiota e tomador
+4) Transferir o dinheiro
