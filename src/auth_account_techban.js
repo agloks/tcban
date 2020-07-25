@@ -50,26 +50,6 @@ class AuthAccountTechBanAPI {
     return result
   };
 
-  getTokenPayments = async() => {
-    return new Promise((res, err) => {
-      req.post({
-        uri : this.configs.TOKEN_ENDPOINT,
-        key: this.configs.CA_KEY,
-        cert: this.configs.CA_CERT,
-        headers: {
-          'Content-Type' : 'application/json',
-          'Accept' : 'application/json',
-          'Authorization' : `Basic ${this.configs.AUTH_HEADER_TOKEN}`
-        },
-        form: {
-          "grant_type": "client_credentials", 
-          "scope": "payments openid"
-        },
-        rejectUnauthorized: false
-      }, this.handlerCallbackRequest(res, err))
-    });
-  };
-
   validateConsentStatus = async() => {
     return new Promise((res, err) => {
       req.get({
@@ -188,8 +168,8 @@ class AuthAccountTechBanAPI {
 };
 
 const CONFIGS = {
-  CA_KEY: fs.readFileSync("../assets/Banco_1/certs/client_private_key.key"),
-  CA_CERT: fs.readFileSync("../assets/Banco_1/certs/client_certificate.crt"),
+  CA_KEY: fs.readFileSync("./assets/Banco_1/certs/client_private_key.key"),
+  CA_CERT: fs.readFileSync("./assets/Banco_1/certs/client_certificate.crt"),
   TOKEN_ENDPOINT: "https://as1.tecban-sandbox.o3bank.co.uk/token",
   RESOURCE_ENDPOINT: "https://rs1.tecban-sandbox.o3bank.co.uk",
   AUTH_HEADER_TOKEN: "YmFkOGI0ZDktMjA3Zi00NmM1LTkyNTEtODQxOTU5YTFiMDI2OmY5NWFhODBkLTE5ODYtNDdiOC05NjY2LThkZDM2NDRlMTMxNw==",
@@ -206,7 +186,6 @@ const CONFIGS = {
     // const a = await techban.getConsentLinkAccount()
     const b = await techban.validateConsentStatus()
     console.log(b.body)
-    // console.log(a.token_bearer)
   } catch (error) {
     console.log(error)
   }
