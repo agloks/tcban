@@ -136,7 +136,7 @@ class PaymentTechBanAPI {
   doPayment = async() => {
     const data = {
       "Data": {
-        "ConsentId": "sdp-1-bf83d85f-f76f-473f-97eb-af9c0b597d3a", //just will work with cache...
+        "ConsentId": this.acess_consent_id, //just will work with cache...
         "Initiation":  this.payload["Data"]["Initiation"]
       },
       "Risk": {}
@@ -204,17 +204,19 @@ const getPaymentPayload = (data) => {
   })
 }
 
-(async() => {
-  try {
-    const techban = new PaymentTechBanAPI(CONFIGS)
-    techban.payload = getPaymentPayload(DATA)
-    // const a = await techban.getConsentLinkPayment()
-    // console.log(a)
-    const b = await techban.getTokenPayment("606ea802-7e5e-4cac-b070-94a1c5975ea7")
-    console.log(b)
-    const c = await techban.doPayment()
-    console.log(c)
-  } catch (error) {
-    console.log(error)
-  }
-})()
+// (async() => {
+//   try {
+//     const techban = new PaymentTechBanAPI(CONFIGS)
+//     techban.payload = getPaymentPayload(DATA)
+//     // const a = await techban.getConsentLinkPayment()
+//     // console.log(a)
+//     const b = await techban.getTokenPayment("606ea802-7e5e-4cac-b070-94a1c5975ea7")
+//     console.log(b)
+//     const c = await techban.doPayment()
+//     console.log(c)
+//   } catch (error) {
+//     console.log(error)
+//   }
+// })()
+
+module.exports = {PaymentTechBanAPI, getPaymentPayload}

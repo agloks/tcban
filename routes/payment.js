@@ -1,8 +1,8 @@
 const util = require("util")
 const fs = require('fs');
 const app  = require("../app")
-const accountCacheModel = require("../models/account_cache")
-const AccountTechBanAPI = require("../src/accounts/resource_account_techban")
+const paymentCacheModel = require("../models/payment_cache")
+const {PaymentTechBanAPI, getPaymentPayload} = require("../src/payments/payment_techban")
 
 const ERROR_INTERN = async (req, res) => {
   res.status(500)
@@ -27,14 +27,34 @@ app.use((req, res, next) => {
   next()
 })
 
-//it's important to use async here else will break
-app.get('/', async () => ({ hello: 'Rélou Moro' }));
-
-//get auth to get resource to manager account
-app.post('/api/V1/account/authGrant', async (req, res) => {
+//get auth to get resource to manager payment
+app.post('/api/V1/payment/authGrant', async (req, res) => {
   try {
-    const techban = new AccountTechBanAPI(req.CONFIGS)
-    const linkToCodeConcent = await techban.getConsentLinkAccount()
+    const { 
+      amount, cpf, name,
+      initID, endID, easyID
+    } = req.json
+
+    const dataToPayment = {
+      "amount": amount,
+      "cpf": cpf, // maximum 11 number
+      "name": name,
+      "initID": initID,
+      "endID": endID
+    };
+
+    const techban = new PaymentTechBanAPI(req.CONFIGS)
+    techban.payload = getPaymentPayload(dataToPayment)
+    const linkToCodeConcent = await techban.getConsentLinkPayment()
+
+    let cacheToCreate = {
+      easyID: easyID,
+      consentID: techban.acess_consent_id,
+      paymentPayload: techban.payload
+    }
+
+    const paymentCache = await new paymentCacheModel(cacheToCreate)
+    await paymentCache.save(true)
     
     res.status(200)
     return res.send({link: linkToCodeConcent.body})
@@ -45,12 +65,12 @@ app.post('/api/V1/account/authGrant', async (req, res) => {
 });
 
 //insert permission code to get resources
-app.post('/api/V1/account/codeConcent', async (req, res) => {
+app.post('/api/V1/payment/codeConcent', async (req, res) => {
   try {
     const { code, easyID } = req.json
 
-    const techban = new AccountTechBanAPI(req.CONFIGS)
-    await techban.getTokenAccounts(code)
+    const techban = new PaymentTechBanAPI(req.CONFIGS)
+    await techban.getTokenPayment(code)
 
     let cacheToCreate = {
       easyID: easyID,
@@ -58,8 +78,12 @@ app.post('/api/V1/account/codeConcent', async (req, res) => {
       rsBearerTokenID: techban.token_id
     }
 
-    const accountCache = await new accountCacheModel(cacheToCreate)
-    await accountCache.save(true)
+    const paymentCache = await paymentCacheModel.findOneAndUpdate(
+      {easyID: easyID},
+      cacheToCreate,
+      {new: true}
+    )
+    console.log(paymentCache)
 
     res.status(200)
     return res.send({token: techban.token_id})
@@ -69,8 +93,8 @@ app.post('/api/V1/account/codeConcent', async (req, res) => {
   } 
 })
 
-//insert permission code to get resources
-app.post('/api/V1/account/getFullDetailAccount', async (req, res) => {
+//insert permission code to can do the payment
+app.post('/api/V1/payment/orderPayment', async (req, res) => {
   try {
     const { easyID } = req.json
     if(easyID == undefined) {
@@ -78,16 +102,17 @@ app.post('/api/V1/account/getFullDetailAccount', async (req, res) => {
       return res.send({"ERROR": "Missing easyID"})
     }
 
-    const techban = new AccountTechBanAPI(req.CONFIGS)
-    const accountCache = await accountCacheModel.findOne({easyID: easyID})
-    console.log(accountCache)
+    const techban = new PaymentTechBanAPI(req.CONFIGS)
+    const paymentCache = await paymentCacheModel.findOne({easyID: easyID})
+   
+    techban.token_id = paymentCache["rsBearerTokenID"]
+    techban.payload = paymentCache["paymentPayload"]
+    techban.acess_consent_id = paymentCache["consentID"]
     
-    techban.token_id = accountCache["rsBearerTokenID"]
-
-    const result = await techban.getAllAccount()
+    const result = await techban.doPayment()
 
     res.status(200)
-    return res.send({accounts: result})
+    return res.send({payment: result})
   } catch (error) {
     console.log(error)
     return res.error(req, res)
