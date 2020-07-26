@@ -12,6 +12,7 @@ const app = nanoexpress();
 module.exports = app
 
 // ROUTES
-require("./routes/index")
+require("./routes/account")
+require("./routes/payment")
 
 app.listen(4000, '0.0.0.0');
