@@ -2,7 +2,8 @@ const request = require('request');
 const req = request.defaults();
 const fs = require('fs');
 const uuid = require('uuid');
-const qs = require("qs")
+const qs = require("qs");
+const moment = require("moment");
 
 class AuthAccountTechBanAPI {
   constructor(configs) {
@@ -17,7 +18,7 @@ class AuthAccountTechBanAPI {
       const _error = error;
       const _response = response;
       
-      console.log(_response)
+      // console.log(_response)
       if(_response.statusCode < 400)
         res(_response)
       else
@@ -72,7 +73,6 @@ class AuthAccountTechBanAPI {
   askGrantToAccount = async() => {
     await this.getAuthTokenAccounts()
 
-    // TODO: change the glue time to moment.utc
     const payload = {
       "Data": {
           "Permissions": [
@@ -96,9 +96,9 @@ class AuthAccountTechBanAPI {
               "ReadScheduledPaymentsBasic",
               "ReadScheduledPaymentsDetail",
               "ReadPartyPSU"],
-          "ExpirationDateTime": "2020-07-26T14:53:43Z",
-          "TransactionFromDateTime": "2020-07-26T14:53:43Z",
-          "TransactionToDateTime": "2020-07-26T14:53:43Z"
+          "ExpirationDateTime": moment.utc().add(12, 'h'),
+          "TransactionFromDateTime": moment.utc().add(12, 'h'),
+          "TransactionToDateTime": moment.utc().add(12, 'h')
       }, 
       "Risk": {}
     }
@@ -196,14 +196,14 @@ class AuthAccountTechBanAPI {
   };
 };
 
-const CONFIGS = {
-  CA_KEY: fs.readFileSync("./assets/Banco_1/certs/client_private_key.key"),
-  CA_CERT: fs.readFileSync("./assets/Banco_1/certs/client_certificate.crt"),
-  TOKEN_ENDPOINT: "https://as1.tecban-sandbox.o3bank.co.uk/token",
-  RESOURCE_ENDPOINT: "https://rs1.tecban-sandbox.o3bank.co.uk",
-  AUTH_HEADER_TOKEN: "YmFkOGI0ZDktMjA3Zi00NmM1LTkyNTEtODQxOTU5YTFiMDI2OmY5NWFhODBkLTE5ODYtNDdiOC05NjY2LThkZDM2NDRlMTMxNw==",
-  OB_PARTICIPANT_ID: "c3c937c4-ab71-427f-9b59-4099b7c680ab"
-};
+// const CONFIGS = {
+//   CA_KEY: fs.readFileSync("./assets/Banco_1/certs/client_private_key.key"),
+//   CA_CERT: fs.readFileSync("./assets/Banco_1/certs/client_certificate.crt"),
+//   TOKEN_ENDPOINT: "https://as1.tecban-sandbox.o3bank.co.uk/token",
+//   RESOURCE_ENDPOINT: "https://rs1.tecban-sandbox.o3bank.co.uk",
+//   AUTH_HEADER_TOKEN: "YmFkOGI0ZDktMjA3Zi00NmM1LTkyNTEtODQxOTU5YTFiMDI2OmY5NWFhODBkLTE5ODYtNDdiOC05NjY2LThkZDM2NDRlMTMxNw==",
+//   OB_PARTICIPANT_ID: "c3c937c4-ab71-427f-9b59-4099b7c680ab"
+// };
 
 // (async() => {
 //   try {

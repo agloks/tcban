@@ -1,7 +1,8 @@
 const util = require("util")
-const AuthAccountTechBanAPI = require("../src/accounts/auth_account_techban")
-const app  = require("../app")
 const fs = require('fs');
+const app  = require("../app")
+const accountCacheModel = require("../models/account_cache")
+const AccountTechBanAPI = require("../src/accounts/resource_account_techban")
 
 const ERROR_INTERN = async (req, res) => {
   res.status(500)
@@ -32,7 +33,7 @@ app.get('/', async () => ({ hello: 'Rélou Moro' }));
 //get auth to get resource to manager account
 app.post('/api/V1/account/authGrant', async (req, res) => {
   try {
-    const techban = new AuthAccountTechBanAPI(req.CONFIGS)
+    const techban = new AccountTechBanAPI(req.CONFIGS)
     const linkToCodeConcent = await techban.getConsentLinkAccount()
     
     res.status(200)
@@ -46,13 +47,22 @@ app.post('/api/V1/account/authGrant', async (req, res) => {
 //insert permission code to get resources
 app.post('/api/V1/account/codeConcent', async (req, res) => {
   try {
-    const { code } = req.json
+    const { code, easyID } = req.json
 
-    const techban = new AuthAccountTechBanAPI(req.CONFIGS)
-    const token_id = await techban.getTokenAccounts(code)
+    const techban = new AccountTechBanAPI(req.CONFIGS)
+    await techban.getTokenAccounts(code)
+
+    let cacheToCreate = {
+      easyID: easyID,
+      obParticipantID: techban.configs.OB_PARTICIPANT_ID,
+      rsBearerTokenID: techban.token_id
+    }
+
+    const accountCache = await new accountCacheModel(cacheToCreate)
+    await accountCache.save(true)
 
     res.status(200)
-    return res.send({token: token_id})
+    return res.send({token: techban.token_id})
   } catch (error) {
     console.log(error)
     return res.error(req, res)
@@ -60,15 +70,24 @@ app.post('/api/V1/account/codeConcent', async (req, res) => {
 })
 
 //insert permission code to get resources
-app.get('/api/V1/account/getFullDetailAccount', async (req, res) => {
+app.post('/api/V1/account/getFullDetailAccount', async (req, res) => {
   try {
-    const { code } = req.json
+    const { easyID } = req.json
+    if(easyID == undefined) {
+      res.status(400)
+      return res.send({"ERROR": "Missing easyID"})
+    }
 
-    const techban = new AuthAccountTechBanAPI(req.CONFIGS)
-    const token_id = await techban.getTokenAccounts(code)
+    const techban = new AccountTechBanAPI(req.CONFIGS)
+    const accountCache = await accountCacheModel.findOne({easyID: easyID})
+    console.log(accountCache)
+    
+    techban.token_id = accountCache["rsBearerTokenID"]
+
+    const result = await techban.getAllAccount()
 
     res.status(200)
-    return res.send({token: token_id})
+    return res.send({accounts: result})
   } catch (error) {
     console.log(error)
     return res.error(req, res)
