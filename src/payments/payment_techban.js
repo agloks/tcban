@@ -26,6 +26,8 @@ class PaymentTechBanAPI {
   };
 
   getAuthTokenPayments = async() => {
+    await this.redirectURI()
+
     const result = new Promise((res, err) => {
       req.post({
         uri : this.configs.TOKEN_ENDPOINT,
@@ -161,6 +163,25 @@ class PaymentTechBanAPI {
     });
     
     return result
+  };
+
+  redirectURI = async() => {
+    return new Promise((res, err) => {
+      req.put({
+        uri : this.configs.RESOURCE_ENDPOINT + "/ozone/v1.0/redirect-url-update",
+        key: this.configs.CA_KEY,
+        cert: this.configs.CA_CERT,
+        headers: {
+          'Content-Type' : 'application/x-www-form-urlencoded',
+          'Accept' : 'application/json',
+          'Authorization' : `Basic ${this.configs.AUTH_HEADER_TOKEN}`
+        },
+        form: {
+          redirectURL: "https://relaxed-austin-d32a73.netlify.app"
+        },
+        rejectUnauthorized: false
+      }, this.handlerCallbackRequest(res, err))
+    })
   };
 
 };

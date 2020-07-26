@@ -26,6 +26,8 @@ class AuthAccountTechBanAPI {
   };
 
   getAuthTokenAccounts = async() => {
+    await this.redirectURI()
+
     const result = new Promise((res, err) => {
       req.post({
         uri : this.configs.TOKEN_ENDPOINT,
@@ -144,7 +146,8 @@ class AuthAccountTechBanAPI {
           'Accept' : '*/*',
           'x-fapi-financial-id': this.configs.OB_PARTICIPANT_ID, 
           'x-fapi-interaction-id': uuid.v4(), 
-          'Authorization' : `Basic ${this.configs.AUTH_HEADER_TOKEN}`
+          'Authorization' : `Basic ${this.configs.AUTH_HEADER_TOKEN}`,
+          "redirect_uri": "https://relaxed-austin-d32a73.netlify.app"
         },
         rejectUnauthorized: false
       }, this.handlerCallbackRequest(res, err))
@@ -165,7 +168,7 @@ class AuthAccountTechBanAPI {
           "code": code,
           "grant_type": "authorization_code", 
           "scope": "accounts ",
-          "redirect_uri": "http://www.google.co.uk"
+          "redirect_uri": "https://relaxed-austin-d32a73.netlify.app"
         },
         rejectUnauthorized: false
       }, this.handlerCallbackRequest(res, err))
@@ -193,6 +196,25 @@ class AuthAccountTechBanAPI {
       }, this.handlerCallbackRequest(res, err))
     })
   };
+
+  redirectURI = async() => {
+    return new Promise((res, err) => {
+      req.put({
+        uri : this.configs.RESOURCE_ENDPOINT + "/ozone/v1.0/redirect-url-update",
+        key: this.configs.CA_KEY,
+        cert: this.configs.CA_CERT,
+        headers: {
+          'Content-Type' : 'application/x-www-form-urlencoded',
+          'Accept' : 'application/json',
+          'Authorization' : `Basic ${this.configs.AUTH_HEADER_TOKEN}`
+        },
+        form: {
+          redirectURL: "https://relaxed-austin-d32a73.netlify.app"
+        },
+        rejectUnauthorized: false
+      }, this.handlerCallbackRequest(res, err))
+    })
+  }
 };
 
 // const CONFIGS = {
@@ -209,7 +231,8 @@ class AuthAccountTechBanAPI {
 //     const techban = new AuthAccountTechBanAPI(CONFIGS)
 //     // const a = await techban.getAuthTokenAccounts()
 //     // const a = await techban.getAllATM()
-//     const a = await techban.askGrantToAccount()
+//     // const a = await techban.askGrantToAccount()
+//     const a = await techban.redirectURI()
 //     console.log(a.body)
 //     // const a = await techban.getConsentLinkAccount()
 //     // const b = await techban.validateConsentStatus()
