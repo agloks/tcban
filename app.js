@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const nanoexpress = require("nanoexpress-pro")
 const mongoose = require("mongoose")
+const cors = require('cors')
 
 mongoose
   .connect(process.env.MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, autoIndex: false})
@@ -9,6 +10,8 @@ mongoose
   .catch(err => { console.error('Error connecting to mongo', err)});
 
 const app = nanoexpress();
+app.use(cors())
+
 module.exports = app
 
 // ROUTES

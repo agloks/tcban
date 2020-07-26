@@ -18,7 +18,6 @@ class PaymentTechBanAPI {
       const _error = error;
       const _response = response;
       
-      console.log(_response)
       if(_response.statusCode < 400)
         res(_response)
       else
