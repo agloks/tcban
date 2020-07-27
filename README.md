@@ -14,16 +14,16 @@ Intermediar empréstimos entre pessoas por meio de uma plataforma web, conectada
 
 ### API Account
 
-[Pedir autenticação](http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/account/authGrant)
+Pedir autenticação => http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/account/authGrant
 
-[Pegar token](http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/account/codeConcent)
+Pegar token => http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/account/codeConcent
 
-[Acessar informações](http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/account/getFullDetailAccount)
+Acessar informações => http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/account/getFullDetailAccount
 
 ### API Payment
 
-[Pedir autenticação](http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/payment/authGrant)
+Pedir autenticação => http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/payment/authGrant
 
-[Ordenar pagamento](http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/payment/codeConcent)
+Ordenar pagamento => http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/payment/codeConcent
 
-[Confirmar pagamento](http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/payment/orderPayment)
+Confirmar pagamento => http://ec2-3-133-90-199.us-east-2.compute.amazonaws.com/api/V1/payment/orderPayment
