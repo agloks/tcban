@@ -13,7 +13,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "moment": "^2.27.0",
-    "mongoose": "^5.9.25",
+    "mongoose": "^5.13.15",
     "nanoexpress-pro": "^2.2.3",
     "qs": "^6.9.4",
     "request": "^2.88.2",
